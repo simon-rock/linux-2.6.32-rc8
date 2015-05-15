@@ -1034,15 +1034,15 @@ long do_sys_open(int dfd, const char __user *filename, int flags, int mode)
 	int fd = PTR_ERR(tmp);
 
 	if (!IS_ERR(tmp)) {
-		fd = get_unused_fd_flags(flags);
+		fd = get_unused_fd_flags(flags); //获得没有使用的fd
 		if (fd >= 0) {
-			struct file *f = do_filp_open(dfd, tmp, flags, mode, 0);
+			struct file *f = do_filp_open(dfd, tmp, flags, mode, 0);//打开或者创建相应的文件
 			if (IS_ERR(f)) {
 				put_unused_fd(fd);
 				fd = PTR_ERR(f);
 			} else {
-				fsnotify_open(f->f_path.dentry);
-				fd_install(fd, f);
+				fsnotify_open(f->f_path.dentry);//将该文件加入到文件监控的系统中,控文件被打开，创建，读写，关闭，修改等操作的
+				fd_install(fd, f);//加入到fd索引位置处的数组中
 			}
 		}
 		putname(tmp);

@@ -375,12 +375,12 @@ SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
 	ssize_t ret = -EBADF;
 	int fput_needed;
 
-	file = fget_light(fd, &fput_needed);
+	file = fget_light(fd, &fput_needed);// 根据 fd 指定的索引，从当前进程描述符中取出相应的 file 对象
 	if (file) {
-		loff_t pos = file_pos_read(file);
-		ret = vfs_read(file, buf, count, &pos);
-		file_pos_write(file, pos);
-		fput_light(file, fput_needed);
+		loff_t pos = file_pos_read(file);//函数取出此次读写文件的当前位置
+		ret = vfs_read(file, buf, count, &pos);//执行文件读取操作，而这个函数最终调用 file->f_op.read() 指向的函数
+		file_pos_write(file, pos);//更新文件的当前读写位置
+		fput_light(file, fput_needed);//更新文件的引用计数
 	}
 
 	return ret;
@@ -393,11 +393,11 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,
 	ssize_t ret = -EBADF;
 	int fput_needed;
 
-	file = fget_light(fd, &fput_needed);
+	file = fget_light(fd, &fput_needed); // 根据 fd 指定的索引，从当前进程描述符中取出相应的 file 对象
 	if (file) {
 		loff_t pos = file_pos_read(file);
 		ret = vfs_write(file, buf, count, &pos);
-		file_pos_write(file, pos);
+		file_pos_write(file, pos);//函数取出此次读写文件的当前位置
 		fput_light(file, fput_needed);
 	}
 
