@@ -1704,7 +1704,7 @@ struct file *do_filp_open(int dfd, const char *pathname,
 	/*
 	 * Create - we need to know the parent.
 	 */
-	error = path_init(dfd, pathname, LOOKUP_PARENT, &nd);
+	error = path_init(dfd, pathname, LOOKUP_PARENT, &nd);//填充nd(nd是一个指向struct nameidata结构的指针)结构
 	if (error)
 		return ERR_PTR(error);
 	error = path_walk(pathname, &nd);
